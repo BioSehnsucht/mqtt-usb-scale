@@ -1,0 +1,13 @@
+[Unit]
+Description=MQTT USB Scale service
+After=network-online.target
+
+[Service]
+User=root
+Group=root
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/bin/env python3 /opt/mqtt-usb-scale/mqtt-usb-scale.py /opt/mqtt-usb-scale/mqtt-usb-scale.conf
+
+[Install]
+WantedBy=multi-user.target

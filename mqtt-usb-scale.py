@@ -2,7 +2,7 @@
 import os, time
 import usb.core
 import usb.util
-from sys import exit
+import sys
 import configparser
 import paho.mqtt.client as paho
 import json
@@ -195,8 +195,13 @@ class Scale:
             print ("IndexError: " + str(e.args))
 
 def main():
+    if len(sys.argv) < 2:
+        print("Usage: mqtt-usb-scale <config file>")
+        sys.exit()
+    configfile = sys.argv[1]
+    
     config = configparser.ConfigParser()
-    config.read('./scale.conf')
+    config.read(configfile)
 
     broker = paho.Client('test')
     broker_address = config.get('broker','address').encode('utf-8')
@@ -217,7 +222,7 @@ def main():
     try:
         scale = Scale(vendorId=scale_vendor, productId=scale_product)
         if scale.attach() is False:
-            exit()                    
+            sys.exit()                    
         else:
             print ("listening for weight...")
 
@@ -248,6 +253,6 @@ def main():
     except KeyboardInterrupt as e:
         scale.release()
         print ("\nCtrl-C pressed, exiting.")
-        exit();
+        sys.exit();
 
 main()
