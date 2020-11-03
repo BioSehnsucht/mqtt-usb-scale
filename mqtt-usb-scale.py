@@ -100,6 +100,8 @@ class Scale:
         #else
         #   Detect it somehow    
 
+        self.attach()
+
     def parse(self, data):
         if data is None:
             self._failures = self._failures + 1
@@ -151,7 +153,6 @@ class Scale:
                     self._dev.set_configuration()
                     #print ("claiming device")
                     usb.util.claim_interface(self._dev, self._interface)
-                    self._endpoint = self._dev[0][(0,0)][0]
         except Exception as e:
             print (e)
             return False
@@ -169,6 +170,7 @@ class Scale:
 
     def grab(self):
         try:
+            self._endpoint = self._dev[0][(0,0)][0]
             # read a data packet
             attempts = 10
             data = None
