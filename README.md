@@ -8,5 +8,5 @@ Python script should work on any relatively current Linux, though it is only tes
 ## How to use:
 1) Clone repo to `/opt/mqtt-usb-scale`
 2) Connect a compatible USB Scale to your device
-3) Copy `/opt/mqtt-usb-scale/scale.conf.template` to `/opt/mqtt-usb-scale/scale.conf` and edit the values appropriately
+3) Copy `/opt/mqtt-usb-scale/mqtt-usb-scale.conf.template` to `/opt/mqtt-usb-scale/mqtt-usb-scale.conf` and edit the values appropriately
 4) Run `/opt/mqtt-usb-scale/install.sh` to install systemd unit file
