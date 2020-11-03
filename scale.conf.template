@@ -1,0 +1,12 @@
+[sensor]
+topic=homeassistant/sensor/scale1
+name=Scale 1
+interval=60
+vendor_id=0x1446
+product_id=0x6a73
+
+[broker]
+address=HOMEASSISTANT_IP
+port=1883
+username=MQTT_USER
+password=MQTT_PASS
