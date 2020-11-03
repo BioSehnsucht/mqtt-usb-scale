@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import os, time
 import usb.core
 import usb.util
@@ -199,8 +199,7 @@ class Scale:
 class Mqtt:
     def __init__(self, address=None, port=None, username=None, password=None):
         if not (address and port and username and password):
-            print("MQTT config error")
-            sys.exit()
+            sys.exit("MQTT config error")
         self._address = address
         self._port = port
         self._username = username
@@ -229,7 +228,13 @@ class Mqtt:
         self._broker.loop_start()
         self._broker.connect(self._address, self._port)
         # Wait for connect to process
-        time.sleep(0.5)
+        loop = 10
+        while loop > 0:
+            loop -= 1
+            if self.connected:
+                loop = 0
+            else:
+                time.sleep(0.1)
 
     def disconnect(self):
         self._broker.disconnect()
@@ -239,14 +244,12 @@ class Mqtt:
         if not self._connected:
             self.connect()
         if not self._connected:
-            print("error with MQTT connection while publishing")
-            sys.exit()
+            sys.exit("error with MQTT connection while publishing")
         self._broker.publish(topic,payload)
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: mqtt-usb-scale <config file>")
-        sys.exit()
+        sys.exit("Usage: mqtt-usb-scale <config file>")
     configfile = sys.argv[1]
     
     config = configparser.ConfigParser()
@@ -270,7 +273,7 @@ def main():
     try:
         scale = Scale(vendorId=scale_vendor, productId=scale_product)
         if scale.attach() is False:
-            sys.exit()                    
+            sys.exit("Error attaching scale")                    
         else:
             print ("listening for weight...")
 
@@ -299,6 +302,7 @@ def main():
                 print ("Too many failures reading device, device unplugged? Exiting.")
         scale.release()
         broker.disconnect()
+        sys.exit("Exiting due to error")
 
     except KeyboardInterrupt as e:
         scale.release()
