@@ -196,6 +196,53 @@ class Scale:
         except IndexError as e:
             print ("IndexError: " + str(e.args))
 
+class Mqtt:
+    def __init__(self, address=None, port=None, username=None, password=None):
+        if not (address and port and username and password):
+            print("MQTT config error")
+            sys.exit()
+        self._address = address
+        self._port = port
+        self._username = username
+        self._password = password
+        self._connected = False
+        self._broker = None
+
+    def on_connect(self, client, userdata, flags, rc):
+        #print("connected")
+        self._connected = True
+
+    def on_disconnect(self, client, userdata, rc):
+        #print("disconnected")
+        self._connected = False
+        self._broker = None
+
+    @property
+    def connected(self):
+        return self._connected
+
+    def connect(self):
+        self._broker = paho.Client('mqtt-usb-scale')
+        self._broker.on_connect = self.on_connect
+        self._broker.on_disconnect = self.on_disconnect
+        self._broker.username_pw_set(self._username, self._password)
+        self._broker.loop_start()
+        self._broker.connect(self._address, self._port)
+        # Wait for connect to process
+        time.sleep(0.5)
+
+    def disconnect(self):
+        self._broker.disconnect()
+        self._broker.loop_stop()
+
+    def publish(self, topic, payload):
+        if not self._connected:
+            self.connect()
+        if not self._connected:
+            print("error with MQTT connection while publishing")
+            sys.exit()
+        self._broker.publish(topic,payload)
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: mqtt-usb-scale <config file>")
@@ -205,13 +252,12 @@ def main():
     config = configparser.ConfigParser()
     config.read(configfile)
 
-    broker = paho.Client('test')
     broker_address = config.get('broker','address').encode('utf-8')
     broker_port = config.getint('broker','port')
     broker_username = config.get('broker','username')
     broker_password = config.get('broker','password')
-    broker.username_pw_set(broker_username, broker_password)
-    broker.connect(broker_address,broker_port)
+    broker = Mqtt(broker_address, broker_port, broker_username, broker_password)
+    broker.connect()
 
     topic_root = config.get('sensor','topic')
     topic_config = topic_root + '/config'
@@ -251,9 +297,12 @@ def main():
                 time.sleep(loop_interval)
             if (scale.failures >= max_failures):
                 print ("Too many failures reading device, device unplugged? Exiting.")
+        scale.release()
+        broker.disconnect()
 
     except KeyboardInterrupt as e:
         scale.release()
+        broker.disconnect()
         print ("\nCtrl-C pressed, exiting.")
         sys.exit();
 
