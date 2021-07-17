@@ -1,6 +1,7 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 set -e
+sudo /usr/bin/apt-get install python3-pip
 sudo /usr/bin/env pip3 install -r $DIR/requirements.txt
 sudo cp $DIR/mqtt-usb-scale.service /etc/systemd/system/
 sudo systemctl daemon-reload
