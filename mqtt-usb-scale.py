@@ -291,7 +291,7 @@ def main():
                 weight = 0
 
                 weight = scale.grab()
-                if weight:
+                if type(weight) == int or float:
                     print("publishing weight")
                     payload_config['unit_of_measurement'] = scale.unit
                     payload_state = int(round(float(weight)))
