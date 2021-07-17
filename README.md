@@ -19,4 +19,4 @@ If you want to run more than one scale on a single host device, that should be p
 1) Clone repo to `/opt/mqtt-usb-scale`
 2) Connect a compatible USB Scale to your device
 3) Copy `/opt/mqtt-usb-scale/mqtt-usb-scale.conf.template` to `/opt/mqtt-usb-scale/mqtt-usb-scale.conf` and edit the values appropriately
-4) Run `/opt/mqtt-usb-scale/install.sh` to install systemd unit file
+4) Run `/opt/mqtt-usb-scale/install.sh` to install systemd unit file and start the service
